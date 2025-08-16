@@ -1,26 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dynamic Quote Generator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Random Quotes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    #quoteDisplay {
+      margin: 20px 0;
+      font-size: 1.2em;
+      font-style: italic;
+      padding: 10px;
+      border-left: 4px solid #333;
+      background: #fff;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 15px;
+      border: none;
+      background: #333;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #555;
+    }
+    #formContainer {
+      margin-top: 20px;
+    }
+    #formContainer input {
+      display: block;
+      margin-bottom: 10px;
+      padding: 8px;
+      width: 250px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Dynamic Quote Generator</h1>
+  <h1>Random Quote Generator</h1>
 
-  <!-- Quote display -->
-  <p id="quoteDisplay"></p>
-
-  <!-- Buttons -->
+  <!-- Display random quote -->
+  <div id="quoteDisplay"></div>
   <button id="newQuote">Show New Quote</button>
 
-  <!-- Form to add a new quote -->
-  <h2>Add a New Quote</h2>
-  <input type="text" id="newQuoteText" placeholder="Enter quote text">
-  <input type="text" id="newQuoteCategory" placeholder="Enter quote category">
-  <button id="addQuoteBtn">Add Quote</button>
+  <!-- Container where the Add Quote form will be created -->
+  <div id="formContainer"></div>
 
-  <!-- Link script -->
   <script src="script.js"></script>
 </body>
 </html>
