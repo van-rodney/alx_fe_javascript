@@ -24,10 +24,15 @@ function displayRandomQuote() {
     document.getElementById("quoteCategory").innerHTML = "";
     return;
   }
+
   const randomIndex = Math.floor(Math.random() * quotes.length);
   const quote = quotes[randomIndex];
+
   document.getElementById("quoteText").innerHTML = `"${quote.text}"`;
   document.getElementById("quoteCategory").innerHTML = `— ${quote.category}`;
+
+  // Save last displayed quote to sessionStorage
+  sessionStorage.setItem("lastQuote", JSON.stringify(quote));
 }
 
 // --- Add New Quote ---
@@ -48,7 +53,7 @@ function addQuote() {
 
 // --- Export Quotes to JSON ---
 function exportToJsonFile() {
-  const jsonStr = JSON.stringify(quotes, null, 2); // formatted
+  const jsonStr = JSON.stringify(quotes, null, 2);
   const blob = new Blob([jsonStr], { type: "application/json" });
   const url = URL.createObjectURL(blob);
 
@@ -81,8 +86,19 @@ function importFromJsonFile(event) {
   fileReader.readAsText(event.target.files[0]);
 }
 
+// --- Event Listener for Show New Quote Button ---
+document.getElementById("newQuote").addEventListener("click", displayRandomQuote);
+
 // --- Load on Page Startup ---
 window.onload = () => {
   loadQuotes();
-  displayRandomQuote();
+
+  const lastQuote = sessionStorage.getItem("lastQuote");
+  if (lastQuote) {
+    const quote = JSON.parse(lastQuote);
+    document.getElementById("quoteText").innerHTML = `"${quote.text}"`;
+    document.getElementById("quoteCategory").innerHTML = `— ${quote.category}`;
+  } else {
+    displayRandomQuote();
+  }
 };
