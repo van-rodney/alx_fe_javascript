@@ -5,11 +5,11 @@ let quotes = [
   { text: "It’s not whether you get knocked down, it’s whether you get up.", category: "Perseverance" }
 ];
 
-// --- DOM Manipulation ---
+// --- DOM Elements ---
 const quoteDisplay = document.getElementById("quoteDisplay");
 const categoryFilter = document.getElementById("categoryFilter");
 
-// Display a random quote
+// --- Display a Random Quote ---
 function displayRandomQuote() {
   const filteredQuotes = filterQuotesArray();
   const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
@@ -18,7 +18,7 @@ function displayRandomQuote() {
   sessionStorage.setItem("lastQuote", JSON.stringify(quote));
 }
 
-// Add new quote
+// --- Add a New Quote ---
 function createAddQuoteForm() {
   const newText = document.getElementById("newQuoteText").value.trim();
   const newCategory = document.getElementById("newQuoteCategory").value.trim();
@@ -37,7 +37,7 @@ function createAddQuoteForm() {
   }
 }
 
-// Populate categories in dropdown
+// --- Populate Categories ---
 function populateCategories() {
   const uniqueCategories = ["all", ...new Set(quotes.map(q => q.category))];
   categoryFilter.innerHTML = "";
@@ -51,7 +51,7 @@ function populateCategories() {
   categoryFilter.value = lastCategory;
 }
 
-// Filter quotes based on selected category
+// --- Filter Quotes Based on Category ---
 function filterQuotesArray() {
   const selected = categoryFilter.value;
   localStorage.setItem("lastCategory", selected);
@@ -98,33 +98,48 @@ function importFromJsonFile(event) {
 // --- Server Sync ---
 const SERVER_URL = "https://jsonplaceholder.typicode.com/posts";
 
-async function fetchQuotesFromServer() {
+// Sync local quotes to server and fetch updates
+async function syncQuotes() {
   try {
+    // POST local quotes to server
+    await fetch(SERVER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(quotes)
+    });
+
+    // Fetch updated server data
     const response = await fetch(SERVER_URL);
     const serverData = await response.json();
-    const serverQuotes = serverData.slice(0,3).map(item => ({ text: item.title, category: "Server" }));
-    resolveConflicts(serverQuotes);
+
+    const serverQuotes = serverData.slice(0, 3).map(item => ({
+      text: item.title,
+      category: "Server"
+    }));
+
+    // Conflict resolution: add only new quotes
+    const newQuotes = serverQuotes.filter(sq => !quotes.find(q => q.text === sq.text));
+    if (newQuotes.length > 0) {
+      quotes.push(...newQuotes);
+      saveQuotes();
+      populateCategories();
+      displayRandomQuote();
+      alert(`${newQuotes.length} new quote(s) synced from server!`);
+    }
+
   } catch (error) {
-    console.error("Error fetching server data:", error);
+    console.error("Error syncing quotes:", error);
   }
 }
 
-function resolveConflicts(serverQuotes) {
-  serverQuotes.forEach(sq => {
-    if (!quotes.find(q => q.text === sq.text)) quotes.push(sq);
-  });
-  saveQuotes();
-  populateCategories();
+// Periodically sync every 60 seconds
+function periodicSync() {
+  syncQuotes();
+  setTimeout(periodicSync, 60000);
 }
 
-// Periodically sync with server every 60s
-function syncWithServer() {
-  fetchQuotesFromServer();
-  setTimeout(syncWithServer, 60000);
-}
-
-// --- Initialize ---
+// --- Initialize App ---
 loadQuotes();
 populateCategories();
 displayRandomQuote();
-syncWithServer();
+periodicSync();
