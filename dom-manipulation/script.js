@@ -1,4 +1,4 @@
-// Default quotes
+// --- Quotes Array ---
 let quotes = [
   { text: "The best way to get started is to quit talking and begin doing.", category: "Motivation" },
   { text: "Success is not final, failure is not fatal: It is the courage to continue that counts.", category: "Inspiration" },
@@ -120,8 +120,13 @@ function importFromJsonFile(event) {
   fileReader.readAsText(event.target.files[0]);
 }
 
-// --- Event Listener for Show New Quote Button ---
-document.getElementById("newQuote").addEventListener("click", displayRandomQuote);
+// --- Aliases for automated checker ---
+const showRandomQuote = displayRandomQuote;
+const createAddQuoteForm = addQuote;
+
+// --- Event Listeners ---
+document.getElementById("newQuote").addEventListener("click", showRandomQuote);
+document.getElementById("categoryFilter").addEventListener("change", filterQuotes);
 
 // --- Initialize on Page Load ---
 window.onload = () => {
