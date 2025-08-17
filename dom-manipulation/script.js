@@ -11,6 +11,42 @@ let quotes = [
 if (localStorage.getItem("quotes")) {
   quotes = JSON.parse(localStorage.getItem("quotes"));
 }
+// Function to post new quotes to the server
+async function postQuotesToServer(quote) {
+  try {
+    const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
+      method: "POST", // POST request
+      headers: {
+        "Content-Type": "application/json" // JSON content
+      },
+      body: JSON.stringify(quote) // send quote as JSON
+    });
+
+    if (response.ok) {
+      console.log("Quote successfully posted to server!");
+      alert("Quote synced with server!");
+    } else {
+      console.error("Failed to post quote:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Error posting quote to server:", error);
+  }
+}
+function addQuote() {
+  const newText = document.getElementById("newQuoteText").value.trim();
+  const newCategory = document.getElementById("newQuoteCategory").value.trim();
+
+  if (newText && newCategory) {
+    const newQuote = { text: newText, category: newCategory };
+    quotes.push(newQuote);
+    saveQuotes();
+    displayRandomQuote();
+    postQuotesToServer(newQuote); // post to server
+    alert("New quote added successfully!");
+  } else {
+    alert("Please enter both quote text and category.");
+  }
+}
 // Function to import quotes from a JSON file
 function importFromJsonFile(event) {
   const fileReader = new FileReader();
