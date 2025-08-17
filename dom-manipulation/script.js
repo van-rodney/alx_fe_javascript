@@ -84,6 +84,34 @@ function exportToJsonFile() {
 function saveQuotes() {
   localStorage.setItem("quotes", JSON.stringify(quotes));
 }
+// Function to sync local quotes with server
+async function syncQuotes() {
+  try {
+    // Fetch quotes from mock API
+    const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+    if (!response.ok) throw new Error("Failed to fetch quotes from server");
+
+    const serverQuotes = await response.json();
+
+    // Simple conflict resolution: server data takes precedence
+    serverQuotes.forEach(sq => {
+      if (!quotes.some(lq => lq.text === sq.title)) {
+        quotes.push({ text: sq.title, category: sq.body || "Uncategorized" });
+      }
+    });
+
+    // Save updated quotes to local storage
+    localStorage.setItem("quotes", JSON.stringify(quotes));
+
+    // Notify user
+    alert("Quotes synced with server!");
+  } catch (error) {
+    console.error("Error syncing quotes:", error);
+  }
+}
+
+// Optional: periodically sync every 60 seconds
+setInterval(syncQuotes, 60000);
 
 // -------------------- Task 0: Display Random Quote --------------------
 function showRandomQuote() {
