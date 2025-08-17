@@ -11,6 +11,18 @@ let quotes = [
 if (localStorage.getItem("quotes")) {
   quotes = JSON.parse(localStorage.getItem("quotes"));
 }
+// Function to export quotes to a JSON file
+function exportToJsonFile() {
+  const dataStr = JSON.stringify(quotes, null, 2); // convert quotes array to JSON string
+  const blob = new Blob([dataStr], { type: "application/json" }); // create a Blob
+  const url = URL.createObjectURL(blob); // create a download link
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "quotes.json"; // name of the downloaded file
+  document.body.appendChild(a);
+  a.click(); // trigger download
+  document.body.removeChild(a); // remove the temporary link
+}
 
 // Function to save quotes to local storage
 function saveQuotes() {
