@@ -11,6 +11,26 @@ let quotes = [
 if (localStorage.getItem("quotes")) {
   quotes = JSON.parse(localStorage.getItem("quotes"));
 }
+// Function to import quotes from a JSON file
+function importFromJsonFile(event) {
+  const fileReader = new FileReader();
+  fileReader.onload = function(e) {
+    try {
+      const importedQuotes = JSON.parse(e.target.result); // parse JSON file
+      if (Array.isArray(importedQuotes)) {
+        quotes.push(...importedQuotes); // add imported quotes to existing array
+        saveQuotes(); // update localStorage if you have this function
+        alert("Quotes imported successfully!");
+        displayRandomQuote(); // refresh displayed quote
+      } else {
+        alert("Invalid JSON format. Make sure it is an array of quotes.");
+      }
+    } catch (error) {
+      alert("Error parsing JSON file: " + error);
+    }
+  };
+  fileReader.readAsText(event.target.files[0]); // read file as text
+}
 // Function to export quotes to a JSON file
 function exportToJsonFile() {
   const dataStr = JSON.stringify(quotes, null, 2); // convert quotes array to JSON string
