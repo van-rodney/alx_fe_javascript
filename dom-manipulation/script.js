@@ -120,7 +120,48 @@ function importFromJsonFile(event) {
   fileReader.readAsText(event.target.files[0]);
 }
 
-// --- Aliases for automated checker ---
+// --- Server Sync ---
+const SERVER_URL = "https://jsonplaceholder.typicode.com/posts";
+
+async function fetchServerQuotes() {
+  try {
+    const response = await fetch(SERVER_URL);
+    const serverData = await response.json();
+
+    const serverQuotes = serverData.slice(0, 3).map(item => ({
+      text: item.title,
+      category: "Server"
+    }));
+
+    resolveConflicts(serverQuotes);
+  } catch (error) {
+    console.error("Error fetching server data:", error);
+  }
+}
+
+function syncWithServer() {
+  fetchServerQuotes();
+  setTimeout(syncWithServer, 60000); // Sync every 60 seconds
+}
+
+function resolveConflicts(serverQuotes) {
+  let newData = [...quotes];
+
+  serverQuotes.forEach(sq => {
+    const exists = quotes.some(q => q.text === sq.text && q.category === sq.category);
+    if (!exists) {
+      newData.push(sq);
+      alert(`New quote from server added: "${sq.text}"`);
+    }
+  });
+
+  quotes = newData;
+  saveQuotes();
+  populateCategories();
+  displayRandomQuote();
+}
+
+// --- Aliases for Automated Checker ---
 const showRandomQuote = displayRandomQuote;
 const createAddQuoteForm = addQuote;
 
@@ -140,4 +181,6 @@ window.onload = () => {
   } else {
     displayRandomQuote();
   }
+
+  syncWithServer();
 };
